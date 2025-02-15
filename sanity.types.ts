@@ -427,6 +427,11 @@ export type PRODUCT_BY_ID_QUERYResult = {
   stock?: number;
 } | null;
 
+// Source: ./sanity/lib/products/getProductsByCategory.ts
+// Variable: PRODUCTS_BY_CATEGORY_QUERY
+// Query: *[            _tyoe == "product"            && references(*[_type == "category" && slug.current == $categorySlug]._id)        ] | order(name asc)
+export type PRODUCTS_BY_CATEGORY_QUERYResult = Array<never>;
+
 // Source: ./sanity/lib/products/searchProductsByName.ts
 // Variable: PRODUCT_SEARCH_QUERY
 // Query: *[        _type == "product"        && name match $searchParam    ] | order(name asc)
@@ -515,6 +520,7 @@ declare module "@sanity/client" {
     "\n        *[_type == \"category\"] \n  | order(name asc)\n        ": ALL_CATEGORIES_QUERYResult;
     "\n        *[_type == \"product\"] \n  | order(name asc)\n        ": ALL_PRODUCTS_QUERYResult;
     "\n        *[\n            _type == \"product\" && slug.current == $slug\n        ] | order(name asc) [0]\n        ": PRODUCT_BY_ID_QUERYResult;
+    "\n        *[\n            _tyoe == \"product\"\n            && references(*[_type == \"category\" && slug.current == $categorySlug]._id)\n        ] | order(name asc)\n        ": PRODUCTS_BY_CATEGORY_QUERYResult;
     "\n    *[\n        _type == \"product\"\n        && name match $searchParam\n    ] | order(name asc)\n    ": PRODUCT_SEARCH_QUERYResult;
     "\n    *[\n        _type == \"sale\"\n        && isActive == true\n        && couponCode == $couponCode\n    ] | order(validFrom desc)[0]\n    ": ACTIVE_SALE_BY_COUPON_QUERYResult;
   }
