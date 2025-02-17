@@ -2,31 +2,52 @@ import { Product } from "@/sanity.types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Defines the structure for items in the shopping basket
-export interface BasketItem {
+/**
+ * Interface representing an item in the shopping cart
+ * @interface CartItem
+ * @property {Product} product - The product details
+ * @property {number} quantity - Number of this product in cart
+ */
+export interface CartItem {
   product: Product;
   quantity: number;
 }
 
-// Defines the state and actions available in the basket store
-interface BasketState {
-  items: BasketItem[];
+/**
+ * Interface defining the cart state and available actions
+ * @interface CartState
+ * @property {CartItem[]} items - Array of items in cart
+ * @property {Function} addItem - Adds a product to cart
+ * @property {Function} removeItem - Removes a product from cart
+ * @property {Function} clearBasket - Empties the cart
+ * @property {Function} getTotalPrice - Calculates total cart value
+ * @property {Function} getItemCount - Gets quantity of specific item
+ * @property {Function} getGroupedItems - Returns all cart items
+ */
+interface CartState {
+  items: CartItem[];
   addItem: (product: Product) => void;
   removeItem: (productId: string) => void;
-  clearBasket: () => void;
+  clearCart: () => void;
   getTotalPrice: () => number;
   getItemCount: (productId: string) => number;
-  getGroupedItems: () => BasketItem[];
+  getGroupedItems: () => CartItem[];
 }
 
-// Create a persistent store using Zustand
-const useBasketStore = create<BasketState>()(
+/**
+ * Creates a persistent cart store using Zustand
+ * The store persists data in localStorage and provides methods to manage cart items
+ */
+const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
-      // Initial state with empty basket
+      // Initialize empty cart
       items: [],
 
-      // Add item to basket or increase quantity if already exists
+      /**
+       * Adds a product to cart or increments quantity if already exists
+       * @param {Product} product - The product to add
+       */
       addItem: (product) =>
         set((state) => {
           const existingItem = state.items.find(
@@ -45,7 +66,10 @@ const useBasketStore = create<BasketState>()(
           }
         }),
 
-      // Remove one quantity of an item or remove completely if quantity is 1
+      /**
+       * Decrements quantity of an item or removes it if quantity becomes 0
+       * @param {string} productId - ID of product to remove
+       */
       removeItem: (productId) =>
         set((state) => ({
           items: state.items.reduce((acc, item) => {
@@ -57,13 +81,18 @@ const useBasketStore = create<BasketState>()(
               acc.push(item);
             }
             return acc;
-          }, [] as BasketItem[]),
+          }, [] as CartItem[]),
         })),
 
-      // Clear all items from basket
-      clearBasket: () => set({ items: [] }),
+      /**
+       * Removes all items from cart
+       */
+      clearCart: () => set({ items: [] }),
 
-      // Calculate total price of all items in basket
+      /**
+       * Calculates total price of all items in cart
+       * @returns {number} Total price
+       */
       getTotalPrice: () => {
         return get().items.reduce(
           (total, item) => total + (item.product.price ?? 0) * item.quantity,
@@ -71,20 +100,26 @@ const useBasketStore = create<BasketState>()(
         );
       },
 
-      // Get quantity of specific item in basket
+      /**
+       * Gets the quantity of a specific product in cart
+       * @param {string} productId - ID of product to check
+       * @returns {number} Quantity of product in cart
+       */
       getItemCount: (productId) => {
         const item = get().items.find((item) => item.product._id === productId);
         return item ? item.quantity : 0;
       },
 
-      // Get all items in basket
+      /**
+       * Returns all items in cart
+       * @returns {CartItem[]} Array of cart items
+       */
       getGroupedItems: () => get().items,
     }),
     {
-      // Persist store in localStorage with this key
-      name: "Basket-store",
+      name: "Cart-store", // Storage key for localStorage
     }
   )
 );
 
-export default useBasketStore;
+export default useCartStore;
