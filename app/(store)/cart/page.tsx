@@ -28,7 +28,7 @@ function CartPage() {
   }
   if (groupedItems.length === 0) {
     return (
-      <div className="container mx-auto p-4 flex flex-col items-center justify-center min-h-[50vhv]">
+      <div className="container mx-auto p-5 flex flex-col items-center justify-center min-h-[50vhv]">
         <h1 className="text-2xl font-bold mb-6 text-gray-800">Your Cart</h1>
         <p className="text-gray-600 text-lg">Cart is Empty</p>
       </div>
