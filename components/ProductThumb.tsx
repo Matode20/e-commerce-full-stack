@@ -5,7 +5,7 @@ import Link from "next/link";
 
 function ProductThumb({ product }: { product: Product }) {
   const isOutOfStock = product.stock != null && product.stock <= 0;
-  console.log(product.slug?.current);
+  console.log(product.slug?.current); 
   return (
     <Link
       href={`/product/${product.slug?.current}`}
